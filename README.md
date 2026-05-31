@@ -6,15 +6,21 @@ I am building open-source tooling for AI coding agents, OSS maintainers, and saf
 
 ### [trace-to-skill](https://github.com/grnbtqdbyx-create/trace-to-skill)
 
-Turn failed Codex, Claude Code, Cursor, Copilot, and MCP-enabled agent runs into reusable `AGENTS.md` rules, `SKILL.md` files, and eval evidence.
+Check whether a repository is Codex-ready, then turn failed Codex, Claude Code, Cursor, Copilot, and MCP-enabled agent runs into reusable `AGENTS.md` rules, `SKILL.md` files, and eval evidence.
 
 The core loop:
 
 ```text
-failed agent run -> failure class -> reusable rule/skill -> eval gate -> keep/revise/reject
+repo doctor -> failed agent run -> failure class -> reusable rule/skill -> eval gate -> keep/revise/reject
 ```
 
 Built for maintainers who want AI agents to reduce review load without creating unverified noise.
+
+Try it:
+
+```bash
+npx github:grnbtqdbyx-create/trace-to-skill doctor .
+```
 
 ## Areas I Care About
 
@@ -26,5 +32,4 @@ Built for maintainers who want AI agents to reduce review load without creating 
 
 ## Public Work
 
-- [trace-to-skill](https://github.com/grnbtqdbyx-create/trace-to-skill): agent failure analysis, PR comments, MCP scoring, instruction drift detection, and before/after eval comparison.
-
+- [trace-to-skill](https://github.com/grnbtqdbyx-create/trace-to-skill): Codex readiness scoring, agent failure analysis, PR comments, MCP scoring, instruction drift detection, and before/after eval comparison.

@@ -139,7 +139,95 @@ Gift cards and top-ups are instantly delivered, irreversible, liquid "cash-like"
 
 ### Gaps
 - No primary-source fraud rate specific to international top-up merchants was found.
-- Stripe's exact current wording should be read on the official page. The tracker quoted May 2026.
+
+### Stripe-specific findings (US LLC on Stripe; added per coordinator update)
+
+**Cited (confirmed on stripe.com, "Last updated: 2026-09-22")**
+- Stripe's official Restricted Businesses page, fetched directly (last updated 2026-09-22), lists these items under the **restricted** section, not the prohibited section. Restricted items need Stripe's prior approval and may be refused. — [Stripe Restricted Businesses](https://stripe.com/legal/restricted-businesses)
+  - Under "Nonfiat currency and stored value": "Sale of stored value or credits maintained, accepted, and issued by anyone other than the seller."
+  - "Preloaded payment cards, gift cards, virtual credits, or other products and services".
+  - "Sale of in-game currency or game items, unless the business is the operator of the virtual world". This matters for Steam, PSN, Xbox and game-currency gift cards.
+- The words "top-up", "airtime" and "mobile credit" **do not appear** on the list. The only telecom item, under prohibited, is "Telecommunications manipulation equipment, including jamming devices". — [Stripe Restricted Businesses](https://stripe.com/legal/restricted-businesses)
+- Stripe Issuing also prohibits "Providing a payment method loaded with or that accesses consumer funds". This is irrelevant unless you issue cards. — [Stripe Restricted Businesses](https://stripe.com/legal/restricted-businesses)
+- Stripe's blog lists stored value and gift cards among restricted categories that are "consistently troublesome". — [Stripe blog](https://stripe.com/blog/why-some-businesses-arent-allowed)
+- If a business doesn't comply, Stripe notifies you by email and a dashboard banner. Funds can be held for about 90-180 days, per secondary guides. A MATCH-listed closure cannot be reopened. **[secondary sources, vendor blogs]** — [Stripe support: why closed](https://support.stripe.com/questions/why-was-my-stripe-account-closed); [chargeback.io guide](https://www.chargeback.io/de/blog/stripe-closed-suspended-my-account); [IndieHackers thread](https://www.indiehackers.com/post/stripe-canceled-my-account-for-reasons-i-dont-understand-what-are-my-options-127308b981)
+- No public evidence was found (Reddit, IndieHackers, case studies) of named Reloadly or Ding resellers processing on Stripe, and no public account-closure stories specific to airtime. Reloadly's own consumer-facing widget/WordPress plugin implies merchants bring their own checkout. — [search returned only generic closure content](https://www.seamlesschex.com/blog/stripe-closed-my-account); [Reloadly Pricing](https://www.reloadly.com/pricing)
+
+**Stripe Radar tools (confirmed from docs.stripe.com/radar/rules)**
+- All payments are screened by default rules. `risk_level = 'highest'` blocks (now marked deprecated in favour of risk controls/dynamic thresholds), and `'elevated'` goes to review. Account-level `:account_fraud_risk_level:` rules also exist. — [Stripe Radar rules](https://docs.stripe.com/radar/rules)
+- **Custom rules (Request 3DS, Block, Review, Allow) need Radar for Fraud Teams.** Allow rules require contacting Stripe. The limit is 200 transaction rules. You can shadow-test a rule at 0% traffic allocation and roll it out gradually. Request-3DS rules only work with Checkout, PaymentIntents or SetupIntents, and they run before block/review/allow rules. — [Stripe Radar rules](https://docs.stripe.com/radar/rules); [Stripe support: Radar for Fraud Teams and liability shift](https://support.stripe.com/questions/using-radar-for-fraud-teams-to-prevent-charges-without-liability-shift)
+- If 3DS authenticates a payment, fraud-dispute liability typically shifts to the issuer. Attributes include `:is_3d_secure:`, `:is_3d_secure_authenticated:` and `:has_liability_shift:`. — [Stripe Radar rules](https://docs.stripe.com/radar/rules)
+- At API level, `payment_method_options.card.request_three_d_secure = 'any'` forces a 3DS attempt and overrides dynamic Radar 3DS rules. `'challenge'` prefers a challenge flow. — [Stripe 3DS authentication flow](https://docs.stripe.com/payments/3d-secure/authentication-flow)
+- Documented rule examples, usable verbatim:
+  - `Request 3D Secure if is_missing(:seconds_since_card_first_seen:)` (3DS on every new card).
+  - `Request 3D Secure if :is_new_card_on_customer:`.
+  - `Block if :is_3d_secure: and not :is_3d_secure_authenticated:`.
+  - `Block if not :is_3d_secure: and :risk_level: != 'normal' and :amount_in_usd: > 25 and not :is_off_session: and :digital_wallet: != 'apple_pay' and not (:digital_wallet: = 'android_pay' and :has_cryptogram:)`.
+  - `Request 3D Secure if :card_country: in @enforce_3ds_list`.
+  - Metadata-based: `::customer:trusted:: = 'false'`.
+  - Improved review rule: `:is_disposable_email: and :card_funding: = 'prepaid'`.
+  — [Stripe Radar rules](https://docs.stripe.com/radar/rules)
+- Stripe recommends against blocking wallets that don't support 3DS. It also notes EU geo-blocking regulation limits on country blocks. — [Stripe Radar rules](https://docs.stripe.com/radar/rules)
+
+**Inferences / recommendations (estimates)**
+- **[estimate]** Airtime/data top-ups are not named on Stripe's list. But Stripe can reasonably treat resold operator airtime as "stored value ... issued by anyone other than the seller" or "virtual credits". Gift cards (especially Amazon, Apple, Google Play, Steam) are explicitly restricted. **Do not launch on the existing eSIM Stripe account without written approval.** Open a support/risk ticket describing the exact model (catalog, average ticket, caps, 3DS policy, KYC thresholds, suppliers) and get approval in writing. Better still, use a separate Stripe account under a separate LLC so a closure or MATCH listing cannot hit the eSIM revenue.
+- **[estimate]** Expect from Stripe, if approved: a rolling or fixed reserve, delayed payout schedule (e.g. 7-14 days), per-transaction caps, and possibly a requirement for 3DS on all charges. Exact reserve terms are set case by case and are not public, so this is a gap.
+- **[estimate]** Order of launch on Stripe: top-ups first (lower-risk framing, low ticket, recipient is a phone number). Add gift cards later and exclude high-liquidity brands (Amazon, Apple, Google Play, Steam, PSN, crypto vouchers) at first.
+- **[estimate]** Recommended Radar for Fraud Teams setup for launch. Shadow-test each rule at 0% first, using Stripe's documented syntax plus metadata you attach:
+  1. `Request 3D Secure if :risk_level: != 'blocked'` (effectively all), or simply set `request_three_d_secure='any'` on every PaymentIntent for the first 90 days.
+  2. `Block if not :is_3d_secure: and not :is_off_session: and :digital_wallet: != 'apple_pay' and not (:digital_wallet: = 'android_pay' and :has_cryptogram:)`. This rejects non-3DS cards except tokenized wallets.
+  3. `Block if :is_3d_secure: and not :is_3d_secure_authenticated:`.
+  4. `Block if :risk_level: = 'elevated'` for gift-card SKUs (`::product_type:: = 'giftcard'`). Use `Review` for top-ups at first.
+  5. `Block if :card_funding: = 'prepaid'` for gift cards.
+  6. Card/IP country mismatch for new customers: `Review if :card_country: != :ip_country: and ::account_age_days:: < 7`.
+  7. `Block if :is_disposable_email:`.
+  8. Velocity, using Radar velocity attributes such as card/email/IP counts per hour or day. Exact attribute names were not verified in this session, so check them in the supported-attributes reference. Starting limits: 3 payments per card per day, 3 cards per customer/email per day, 5 attempts per IP per hour, and a first-week spend cap of $50/day and $150/week, enforced in app logic via metadata `::account_age_days::` and `::rolling_7d_spend::`.
+- **[estimate]** App-level controls beyond Radar:
+  - Phone OTP at sign-up, with limits on recipient numbers per account (e.g. 3 in the first 30 days).
+  - Hold gift-card code delivery for 30-60 minutes for new accounts. Cancel and refund if Radar early fraud warnings (EFW) arrive.
+  - Auto-refund on any EFW to avoid the dispute.
+  - A KYC (Stripe Identity or Sumsub) trigger above about $300/month.
+  - Daily monitoring of dispute and EFW ratios, with an auto-pause above 0.5%.
+- **[estimate]** Payment-method mix: add Apple Pay and Google Pay (tokenized, lower fraud), and ACH/SEPA/Link bank payments where available. Use crypto (e.g. via a separate processor) for higher-risk gift cards. This keeps card-not-present gift-card exposure small.
+
+**Gaps (Stripe)**
+- No confirmed public examples of top-up resellers approved on Stripe, and no published Stripe reserve terms for this category.
+- Exact Radar velocity attribute names were not fetched. See [Stripe Radar supported attributes](https://docs.stripe.com/radar/rules/supported-attributes).
+
+### Provider KYB for a US LLC owned by a non-US person (added per coordinator update)
+
+**Cited**
+- Reloadly: no public KYB document list was found. The pricing page states free developer accounts and card/ACH/wire/crypto funding, and nothing about residency limits. — [Reloadly Pricing](https://www.reloadly.com/pricing)
+- DingConnect: free sign-up, card/PayPal/bank funding, and a distributor contract with an account-manager commercial proposal. No published KYB list was found. — [DingConnect SignUp](https://www.dingconnect.com/SignUp); [DingConnect FAQ](https://www.dingconnect.com/Api/Faq)
+- DT One: register a DT Shop account first, then generate keys. No published KYB list was found. — [DT One DVS docs](https://dvs-api-doc.dtone.com/)
+- Prepay Nation/Valuetopup: manual onboarding through ops email, with prepaid or credit accounts. — [Valuetopup FAQ](https://developers-valuetopup-39b.pages.dev/docs/faq)
+- Bitrefill Business: manual BD onboarding, and crypto deposits fit non-US owners without US banking. — [Bitrefill docs](https://docs.bitrefill.com/docs/Common%20Use%20Cases)
+- Typical US-fintech KYB packages for an LLC, from other providers (not top-up-specific):
+  - Certificate/Articles of Formation and EIN;
+  - government ID (passport accepted for non-US persons) for each UBO, often anyone holding 10-25% or more;
+  - residential address for each owner;
+  - business address (some reject registered-agent-only or non-US addresses);
+  - bank account confirmation.
+  — [Nium US required documents](https://docs.nium.com/docs/onboarding/customer/us/required-documents); [Airwallex US business KYC](https://www.airwallex.com/docs/connected-accounts/onboarding/kyc-and-onboarding/native-api/business-kyc-requirements/united-states-(us)); [Relay required documents](https://support.relayfi.com/hc/en-us/articles/38049251551636-Required-Documents-and-Organization-Details-to-Open-a-Relay-Account-by-Entity-Type)
+
+**Inferences (estimates)**
+- **[estimate]** Aggregators are global (Reloadly is Dominican/US-founded, Ding is Irish, DT One is Singapore/global, Prepay Nation is US) and routinely onboard non-US-owned resellers. A US LLC with a non-US owner is unlikely to be disqualifying by itself. The friction points:
+  - Sanctions screening of the owner's nationality and residence. A Turkish resident owner is fine. Selling to SY/IR destinations is not, since US-LLC OFAC obligations apply directly. That means no Syria (largely) or Iran operators, and caution with Cuba, Russia, Venezuela-related operators and Afghanistan (Taliban-related designations).
+  - Proof of a real business: a live website, T&Cs, AML/KYC policy, and expected volumes per corridor.
+  - A US bank account for ACH/wire funding (Mercury/Relay-type accounts work for many non-US-owned LLCs).
+- **[estimate]** Expected KYB document set for all providers:
+  - Articles of Organization;
+  - EIN letter (CP 575/147C);
+  - Operating Agreement showing ownership;
+  - owner passport plus proof of residential address;
+  - business address proof;
+  - website URL and an AML/fraud policy description;
+  - funding bank statement.
+  Ding and DT One may additionally require a contract and a corridor/volume forecast. Prepay Nation and Bitrefill are relationship-led.
+- **[estimate]** The US LLC as merchant of record means US state-level questions apply. Selling prepaid access or gift cards may trigger FinCEN "prepaid access" or money-transmitter considerations at higher volumes. Closed-loop gift cards have exemptions (e.g. under about $2,000 per device per day for prepaid-access rules). Get US fintech counsel to confirm before scale. This was not verified in this session.
+
+**Gaps (KYB)**
+- No provider publishes explicit KYB lists or residency eligibility for top-up resellers. This must be confirmed through sign-up or sales with each one.
 
 ---
 

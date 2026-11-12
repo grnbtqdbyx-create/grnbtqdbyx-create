@@ -234,3 +234,63 @@ The 70% margin claim is plausible under the self-hosted model.
 ### Gaps
 - No direct evidence of hosting providers or ASNs for VPN nodes. To settle the own-vs-wholesale question, connect the app on a test device and resolve the endpoint IPs via ipinfo or bgp.he.net. This was not done because it requires running the app.
 - No disclosed cost breakdown from the founder. The 70% margin was previously reported and was not visible on the 12 Nov 2026 fetch.
+
+## 7. Web, desktop or config-based access: is BambooVPN mobile-only?
+
+### Takeaway
+BambooVPN is **not mobile-only**, but it is **app-only**. The download page offers iOS, Android, Mac (via the Mac App Store), a Windows installer and a Chrome/Edge/Brave extension. It mentions no manual WireGuard/OpenVPN config downloads, no Linux, no router support and no web checkout. The web account portal (`myaccount.bamboovpn.com`) is a login-only dashboard and does not show plans or configs. Mobile apps remain the business: the founder reports 80% iOS and 20% Play revenue.
+
+### Cited Findings
+- The download page lists five options:
+  - iPhone/iPad (iOS 15+)
+  - Android (Google Play)
+  - Mac (the same App Store ID, id1617533959)
+  - Windows 10+ (`https://bk.bamboovpn.com/downloads/BambooVPN-Setup-2.1.0.exe`, v2.1.0, served from the backend host)
+  - Chrome extension (Chrome, Edge, Brave)
+- The page also says "One subscription covers up to 10 devices at once." It does not mention Linux, Firefox, routers, manual WireGuard/OpenVPN config files, a web dashboard, or how desktop users pay — [Download page](https://bamboovpn.com/download)
+- `myaccount.bamboovpn.com` is a "Welcome back / Sign in" login page (portal v1.0.20). No plans, checkout or config download are visible without logging in — [myaccount](https://myaccount.bamboovpn.com)
+- The Android app links to `https://myaccount.bamboovpn.com/dashboard/dedicated-ip`. It also contains RevenueCat Stripe-store identifiers and a `usdt_text.svg` asset — static APK analysis (§4)
+- The Chrome extension has 1,000 users and a 2.3★ rating from 3 ratings — [Chrome Web Store](https://chromewebstore.google.com/detail/bamboovpn/kbcmkoncjllgdeanokoafadafhgflfmm)
+- Founder note: iOS ~80% of revenue, Play ~20%. Desktop and Chrome are described as built but not yet released — [TrustMRR](https://trustmrr.com/startup/bamboovpn)
+
+### Inferences
+- Revenue from desktop, extension and web is likely negligible today. All 1,490 Superwall-verified subscriptions run through App Store and Play billing. Desktop and extension users likely log in with the same account and get a cross-device entitlement (RevenueCat aliasing, "up to 10 devices").
+- The Stripe and USDT hints point to web or off-store checkout that is planned or in partial use, likely for dedicated IPs or desktop. It is not visible publicly.
+- **Their market position:** BambooVPN does **not** compete in the web-only "account plus downloadable configs" niche, where users buy on a website and import WireGuard/OpenVPN profiles into the official open-source apps. That niche is open relative to this competitor.
+
+### Gaps
+- Whether a user can buy on the web, export raw WireGuard/OpenVPN configs or use the official WireGuard app is unknown: the dashboard is behind login.
+- The Windows installer was deliberately not downloaded or inspected.
+
+## 8. Lessons for a web-only SaaS VPN (user will not build mobile apps)
+
+### Takeaway
+BambooVPN shows that a small team can run an own-server VPN on open-source WireGuard/OpenVPN with a custom backend and reach about $10k MRR at a claimed ~70% margin. The growth engine, though, is App Store/Play search plus mobile paywalls (Superwall, weekly plans). A web-only SaaS cannot copy that distribution. It can copy the infrastructure model and must replace distribution with web channels.
+
+### Cited Findings
+- Infrastructure is open-source WireGuard plus ics-openvpn with a custom panel. The backend uses the WireGuard peer-pool endpoints `acquire-peer` / `heartbeat` / `release-peer`, and no vendor SDK was found — static APK analysis (§4)
+- Distribution and monetization:
+  - About 824K Android installs; founder-reported "100% organic" and 80% iOS revenue.
+  - Weekly $3.99–4.99 and yearly $51.99 subscriptions behind a Superwall paywall.
+  - The free tier is ad-funded.
+  — [TrustMRR](https://trustmrr.com/startup/bamboovpn); [AppGoblin Android](https://appgoblin.info/apps/free.vpn.unblock.proxy.bamboovpn); [bamboovpn.com](https://bamboovpn.com)
+- The website itself monetizes nothing directly: download links only, a login-only portal, no web pricing checkout found — [Download page](https://bamboovpn.com/download); [myaccount](https://myaccount.bamboovpn.com)
+
+### Inferences (recommendations, not sourced facts)
+1. **Copy the backend pattern, not the apps.**
+   - A WireGuard peer-pool panel (acquire/release/heartbeat), per-server OpenVPN configs and a server list API are all buildable as a web service.
+   - For a web-only product, deliver **downloadable WireGuard/OpenVPN configs and QR codes** that users import into the free official WireGuard/OpenVPN clients on every OS.
+   - This removes app development and app-store fees. The ~15–30% store fee is a margin BambooVPN gives up.
+2. **Self-hosted servers are viable at this scale.** BambooVPN's numbers suggest a ~$1–2k/mo cost base is enough for about 1.5k paying users. Wholesale configs (e.g. VPNresellers-style) can fill exotic locations. BambooVPN may itself mix the two (unverified).
+3. **Pricing reference:**
+   - $3.99–4.99/week, which is mobile-paywall pricing.
+   - $51.99/year (≈$4.33/mo).
+   - About $4.57 revenue per subscriber per 30 days.
+   Web buyers typically compare monthly and annual prices, so a weekly plan is a mobile-paywall artifact that may not translate to web.
+4. **Distribution is the hard part.** BambooVPN's organic engine is ASO with keyword-stuffed listings ("free vpn unblock proxy", "Turbo VPN"). It has a website, blog and affiliate page, yet DR is only 16 and there is no web checkout. Web-only needs SEO, affiliates, communities and possibly crypto/Stripe checkout. BambooVPN's USDT/Stripe hints suggest even app-first players see demand for this.
+5. **Differentiators BambooVPN already ships** that a web SaaS can match server-side: dedicated IPs, multi-hop "Secure Core", DNS-level ad blocking ("BambooShield"), 10 devices per subscription. Kill switch and split tunneling rely on the client; the official WireGuard apps provide basic equivalents.
+6. **Risks:** be careful with location claims; BambooVPN shows inconsistent location lists across its own channels. Expect support load from manual-config users. Payment processors are cautious about VPN merchants; this is a general consideration, not verified here.
+
+### Gaps
+- No public data on BambooVPN web-sourced revenue. All verified revenue is from app stores via Superwall.
+- Wholesale per-account prices and VPS costs were not researched in this task. See the separate build-models notes (`vpn_build_models.md`) if available.

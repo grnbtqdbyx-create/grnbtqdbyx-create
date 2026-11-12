@@ -1,4 +1,4 @@
-# Turkey-based founder: legal, regulatory, payments and tax landscape for (a) a branded VPN subscription and (b) international mobile top-ups / digital gift cards (as of Nov 2026)
+# Turkey-based founder (with existing US LLC + Stripe): legal, regulatory, payments and tax landscape for (a) a branded VPN subscription and (b) international mobile top-ups / digital gift cards (as of Nov 2026)
 
 Research date: 2026-11-12. About 22 searches and fetches. Many sources are secondary (law-firm blogs, accounting columns, VPN-industry blogs), and this is flagged where it matters. **Nothing here is legal or tax advice.** Points marked [NEEDS PROFESSIONAL ADVICE] need a Turkish lawyer (BTK/5651/6493) or a mali müşavir/YMM (tax).
 
@@ -98,101 +98,176 @@ Payment services and e-money are licensed by **TCMB** under Law 6493; the paymen
 
 ---
 
-## 3. Payment processors: iyzico, PayTR, Param, Stripe (via a foreign entity), Paddle, Lemon Squeezy / Stripe Managed Payments, PayPal, and high-risk options
+## 3. Payments through the founder's existing US LLC: Stripe rules for VPN and for gift cards / stored value / top-ups; reserves, Radar and 3DS; alternatives if Stripe refuses (high-risk acquirers, Paddle, Lemon Squeezy, crypto); brief note on Turkish PSPs
+
+*(Updated after the user clarified that the founder already has a US LLC and will collect payments through Stripe via that LLC.)*
 
 ### Takeaway
-For the **VPN**, Merchant-of-Record platforms are possible but not guaranteed. Paddle lists VPN/proxies as a "Restricted Category" requiring enhanced due diligence at Paddle's sole discretion. Stripe's restricted list does not name VPNs. For **gift cards and top-ups**, Paddle prohibits stored value and gift cards. Stripe classes gift cards, prepaid cards and third-party stored value as "Restricted", meaning extra due diligence and possible rejection. Lemon Squeezy bars anything Stripe restricts, plus "regulated services" including "cellular/communication". So the top-up and gift-card line realistically needs a Turkish PSP (iyzico or PayTR, with sector approval) or a high-risk acquirer, not a SaaS MoR.
+- **VPN subscription via a US LLC on Stripe: plausible.** VPN, proxy and "anonymity" services do **not** appear anywhere on Stripe's prohibited or restricted list; the only telecom item is jamming equipment. A standard SaaS-style VPN subscription should therefore go through normal onboarding. Stripe still reviews every account and can apply reserves at its discretion.
+- **Gift cards / third-party stored value: "Restricted" on Stripe.** This means extra due diligence, possible requests for licences or business-model detail, possible refusal, and approval that is per-offering and revocable. Stripe also lists money transmitters, remittance and other MSBs among the categories on its list, and international airtime top-ups are commonly treated as remittance-adjacent.
+- **Consequence for the business plan:** build the top-up and gift-card line expecting that it may need (a) explicit Stripe approval in writing, or (b) a separate high-risk acquirer and/or crypto rail. It should not share a Stripe account with the VPN, so that a termination does not take down both lines.
 
 ### Cited Findings
-**Paddle (MoR)**
-- Paddle's AUP lists **"VPN and Proxies (Restricted Category)"**. Paddle runs enhanced due diligence on restricted offerings and will reach out for more information — [Paddle Help – What am I not allowed to sell](https://www.paddle.com/help/start/intro-to-paddle/what-am-i-not-allowed-to-sell-on-paddle)
-- Virtual currency and stored value, **including gift cards and vouchers**, appear among Paddle's prohibited categories — [Paddle Help](https://paddle.com/help/start/intro-to-paddle/what-am-i-not-allowed-to-sell-on-paddle)
-- Paddle's MSA lets it decide "in its absolute discretion" that a product falls outside the AUP or its risk tolerance — [Paddle Master Services Agreement](https://www.paddle.com/legal/terms)
-- Fee: **5% + $0.50 per transaction** (third-party sources; not confirmed on Paddle's own page in this research) — [Unibee Paddle review 2026](https://unibee.dev/blog/paddle-review-features-pricing-pros-cons/); [MoR Finder](https://www.merchantofrecordfinder.com/providers/paddle)
+**Stripe policy text** (all from [Stripe – Prohibited and Restricted Businesses](https://stripe.com/legal/restricted-businesses))
+- Checked the full page for "VPN", "proxy", "anonym", "phone" and "prepaid": **none appear**. The only telecom-related prohibited item is "Telecommunications manipulation equipment, including jamming devices."
+- Restricted under "Nonfiat currency and stored value":
+  - "Preloaded payment cards, gift cards, virtual credits, or other products and services"
+  - "Sale of stored value or credits maintained, accepted, and issued by anyone other than the seller"
+  - "Seller-maintained stored value or credits may be subject to limits."
+- The list also names "Money transmitters, remittances, currency exchange services, and other money service businesses" and "Peer-to-peer money transmission." The fetched text did not show which tier (prohibited or restricted) each item is in; see Gaps.
+- What "restricted" means:
+  - These businesses require additional due diligence before Stripe confirms it can support them.
+  - Applicants may be asked for proof of relevant licences or more detail on the business model.
+  - Stripe may not approve them.
+  - Approval is specific to each service offering and can be modified or revoked at any time under the Stripe Services Agreement.
 
-**Lemon Squeezy / Stripe Managed Payments**
-- Lemon Squeezy prohibits "any products restricted by our payment processing partners" (linking to Stripe's list). It also prohibits "regulated services such as" cellular/communication, banking/financing and currency exchange. VPN, gift cards and top-ups are not named explicitly; sellers are told to contact support if unsure — [Lemon Squeezy – Prohibited products](https://docs.lemonsqueezy.com/help/getting-started/prohibited-products)
-- Lemon Squeezy fee: **5% + $0.50**, with surcharges for subscriptions, international payments and PayPal — [Freemius fees comparison](https://freemius.com/blog/payment-processing-fees/)
-- Stripe acquired Lemon Squeezy in 2024 and launched **Stripe Managed Payments** (MoR, public preview). Sources conflict on price, from about 3.5% on top of Stripe processing to 5% + $0.50 — [MEAN CEO](https://blog.mean.ceo/stripe-vs-lemon-squeezy/); [Rework](https://resources.rework.com/tools/billing-revenue/paddle-vs-lemon-squeezy); [Stripe support – "Sold through Link, LLC"](https://support.stripe.com/questions/why-is-sold-through-link-llc-the-legal-entity-on-my-invoice-for-stripe-managed-payments-fees)
+**Reserves**
+- Stripe uses **fixed and rolling reserves**, sized by the business's risk level (industry conditions, payment activity, financial stability), and notifies the account by email when it applies one — [Stripe Support – Reserves FAQ](https://support.stripe.com/questions/reserves-frequently-asked-questions?locale=en-GB); [Stripe – Rolling reserves 101](https://stripe.com/en-ca/resources/more/rolling-reserves-101-what-they-are-why-they-matter)
+- Stripe's help content shows a worked example of a **25% rolling reserve with a 30-day release window** for a US business. This is an illustration, not a quoted rate — [Stripe Support – Reserves FAQ](https://support.stripe.com/questions/reserves-faq)
+- Third-party sources claim rolling reserves of **90–180 days**; Stripe itself publishes no percentage range. Unverified — [terms.law – Stripe holds FAQ](https://terms.law/FAQ/payment-processors/stripe-holds-faq.html)
 
-**Stripe (direct, via a foreign entity)**
-- Stripe's Restricted Businesses list does **not mention VPN/proxy services**. Its only telecom item is the *prohibited* "telecommunications manipulation equipment, including jamming devices" — [Stripe Restricted Businesses](https://stripe.com/legal/restricted-businesses)
-- Under "Nonfiat currency and stored value", Stripe lists **"Preloaded payment cards, gift cards, virtual credits"** and "sale of stored value or credits maintained, accepted, and issued by anyone other than the seller" as **Restricted**, meaning extra due diligence, may not be approved, and sometimes limited availability via sales. Mobile top-ups and airtime are not named — [Stripe Restricted Businesses](https://stripe.com/legal/restricted-businesses)
-- Stripe does not onboard Turkish entities directly; this was not checked in this research (see Gaps). The usual route is a US LLC via Stripe Atlas.
-- **Stripe Atlas costs:**
-  - **$500 one-time**, covering Delaware filing and the first year of registered agent.
-  - **$100/yr** registered agent after year 1.
-  - Delaware LLC annual tax of **$300**, with one source claiming **$400 from 1 Jan 2026** (conflicting).
-  - For a C-corp, franchise tax of at least **$175 + $50** annual report.
-  - Sources: [Rho – Stripe Atlas review](https://www.rho.co/blog/stripe-atlas-review); [Stripe – Delaware LLC costs](https://stripe.com/resources/more/how-much-does-it-cost-to-form-an-llc-in-delaware-fees-and-other-costs); [AgentDeals – Forming a US company in 2026](https://agentdeals.dev/company-formation-pricing-2026)
+**Fraud tooling (Radar and 3DS)**
+- Stripe's default approach is to let **Radar dynamically request 3D Secure** based on risk level. Manual 3DS triggering is for advanced users with their own fraud engine — [Stripe Docs – Authenticate with 3D Secure](https://docs.stripe.com/payments/3d-secure/authentication-flow)
+- **Custom 3DS rules need Radar for Fraud Teams** (Radar Plus). Example rules request 3DS above a risk score or amount — [Stripe Docs – Radar rules](https://docs.stripe.com/radar/rules)
+- Gift cards are a classic fraud vector. Stolen cards buy codes that are redeemed instantly, and the merchant absorbs the chargeback. This is why the vertical is treated as high risk — [Marix – gift card merchant high risk](https://marix.app/library/faq/gift-card-merchant-high-risk)
 
-**Turkish PSPs (iyzico, PayTR, Param)**
-- **TCMB 2026 maximum merchant commission caps** reported in a secondary source:
-  - domestic debit card **1.04%**
-  - **foreign-issued cards 1.90%**
-  - single-payment TL credit card **3.56%**
-  - Source: [Karekod.org – Sanal POS komisyon oranları 2026](https://www.karekod.org/blog/sanal-pos-komisyon-oranlari/)
-- **PayTR:** from **2.19%** for new merchants (7-day settlement). The final rate depends on volume, sector and card type. A figure of 3.49% + $0.30 for foreign cards appears on a low-reliability page — [Karekod.org](https://www.karekod.org/blog/sanal-pos-komisyon-oranlari/); [ikas – POS ücretleri](https://ikas.com/tr/blog/pos-ucretleri-ve-giderleri)
-- **iyzico:** no public list price; rates appear in the merchant panel. Third-party estimates are about 2.99%+. Paynet merged into iyzico, and services run under the iyzico brand from 1 Jan 2026 — [Karekod.org](https://www.karekod.org/blog/sanal-pos-komisyon-oranlari/); [KobiTime](https://kobitime.com/sanal-pos-ucretleri-ve-sanal-pos-firmalari-2026/)
+**Alternatives if Stripe refuses or is too risky for top-ups and gift cards**
+- **Paddle:**
+  - "VPN and Proxies (Restricted Category)", with enhanced due diligence.
+  - Stored value, including **gift cards and vouchers, prohibited**.
+  - Approval at Paddle's "absolute discretion."
+  - Fee 5% + $0.50 (third-party figure).
+  - Sources: [Paddle Help – AUP](https://www.paddle.com/help/start/intro-to-paddle/what-am-i-not-allowed-to-sell-on-paddle); [Paddle MSA](https://www.paddle.com/legal/terms); [Unibee review](https://unibee.dev/blog/paddle-review-features-pricing-pros-cons/)
+- **Lemon Squeezy:**
+  - Prohibits anything restricted by its processing partners (Stripe) and "regulated services such as… cellular/communication… banking/financing… currency exchange."
+  - Fee 5% + $0.50 plus surcharges.
+  - Owned by Stripe since 2024. Stripe's own MoR product, **Stripe Managed Payments**, is in preview, and sources conflict on its pricing.
+  - Sources: [Lemon Squeezy – Prohibited products](https://docs.lemonsqueezy.com/help/getting-started/prohibited-products); [Freemius](https://freemius.com/blog/payment-processing-fees/); [MEAN CEO](https://blog.mean.ceo/stripe-vs-lemon-squeezy/)
+- **High-risk merchant accounts:**
+  - Gift cards sit "squarely in the high-risk tier." High-risk is not a ban, but it needs a processor experienced in the vertical with a real acquiring-bank relationship.
+  - Ask a provider "Who is your acquiring bank for merchants in my vertical?"
+  - Sources: [Marix](https://marix.app/library/faq/gift-card-merchant-high-risk); [NerdWallet – best high-risk processors 2026](https://www.nerdwallet.com/business/software/best/high-risk-payment-processors); [Chargebacks911](https://chargebacks911.com/high-risk-merchant-accounts/)
+- **Crypto rails:**
+  - Crypto settlement does not remove the need for a card account, because customers still want to pay by card.
+  - Some fiat-to-crypto gateways market "no merchant KYC, no rolling reserves, no MATCH list." These are unverified marketing claims, and they are a compliance red flag for a gift-card business.
+  - Sources: [Inqud blog 2026](https://inquid.blogspot.com/2026/06/high-risk-payment-processing-in-2026.html); [TechBullion](https://techbullion.com/high-risk-merchant-account-in-2026-the-complete-guide-including-crypto-settlement-alternatives/); [NOWPayments blog](https://nowpayments.io/blog/risk-merchant-providers-gateways)
+- **Wholesale supply:** Reloadly offers top-up and gift-card APIs aimed at resellers, under separate API Terms and Platform Client Terms. In typical reseller contracts the reseller is the Merchant of Record — [Reloadly corporate terms](https://reloadly.com/corporate-terms); [Reloadly platform client terms](https://reloadly.com/platform-client-terms); [Reach reseller terms (example)](https://www.withreach.com/merchant-terms-of-service)
 
-**High-risk merchant accounts**
-- "Store of digital value (vouchers, e-wallets, mobile money and e-money)" is classed as high risk. High-risk accounts carry stricter terms, such as reserves and higher fees — [Peach Payments](https://support.peachpayments.com/support/solutions/articles/47001276655-capitec-pay-high-risk-industry); [Chargebacks911 – high-risk merchant accounts](https://chargebacks911.com/high-risk-merchant-accounts/); [PayPro Global – high-risk category](https://payproglobal.com/answers/what-is-high-risk-merchant-category/)
+**Brief note: Turkish PSPs (de-emphasized)**
+- iyzico and PayTR need a Turkish merchant entity.
+- TCMB 2026 caps: foreign-issued cards 1.90%, single-payment TL credit card 3.56%.
+- PayTR from about 2.19%. iyzico has no public price; Paynet was folded into iyzico from 1 Jan 2026.
+- These are relevant only if a Turkish company invoices, for example under the service-export regime in Section 4. Using them for VPN sales to Turkish users would increase BTK exposure (Section 1).
+- Sources: [Karekod.org](https://www.karekod.org/blog/sanal-pos-komisyon-oranlari/); [KobiTime](https://kobitime.com/sanal-pos-ucretleri-ve-sanal-pos-firmalari-2026/)
 
 ### Inferences
-- **VPN, international customers:** apply to Paddle first. It is a full MoR that handles global VAT/GST, and VPN is restricted rather than banned, but approval is discretionary. As a fallback, use Stripe (via a US LLC) directly, which does not list VPN as restricted, plus a VAT/OSS registration or a tax engine. Stripe Managed Payments is a third option, with policy for VPNs to be confirmed.
-- **VPN, Turkish customers:** a Turkish PSP such as iyzico or PayTR would require a Turkish company and would expose the business to the BTK risks in Section 1. PSPs may also refuse VPN merchants once the draft law passes. This was not verified.
-- **Top-ups and gift cards:** Paddle is out because these are prohibited. Lemon Squeezy is likely out (Stripe-restricted, plus "cellular/communication"). Stripe is possible only after restricted-business review. The realistic options are a Turkish PSP with sector approval, a crypto or alternative-payment processor, or a specialist high-risk acquirer. Expect rolling reserves and fees well above the TCMB caps quoted for normal merchants.
-- **Foreign-card economics in Turkey:** the TCMB cap of 1.90% for foreign-issued cards makes iyzico or PayTR cheaper than any MoR at 5% + $0.50, if the Turkish entity can handle foreign VAT itself.
+- **VPN on Stripe:** the main risks are not policy text but (a) chargeback and fraud ratios, since VPN buyers include card-testers and fraudsters hiding their IP; (b) sanctions screening, because Stripe must block users in comprehensively sanctioned jurisdictions; and (c) marketing that frames the product as evading law enforcement or national blocks. Keep messaging privacy and security focused. Use Radar plus 3DS on first payment, and consider blocking prepaid and anonymous cards via Radar rules.
+- **Top-ups and gift cards on Stripe:**
+  - Disclose the business model honestly at onboarding. Do not label it as "VPN/SaaS"; misclassification is a common cause of termination with funds held.
+  - Expect questions on supplier (Reloadly or Ding), KYC, velocity limits and refund policy, and possibly a request for an MSB or legal opinion (see Section 4, FinCEN).
+  - Mitigations: low per-order and per-day caps, 3DS on every order, delayed code delivery for new customers, and no customer stored balance.
+- **Separation:** run each line under a separate Stripe account, or ideally a separate LLC. Stripe can link accounts, so this reduces but does not eliminate contagion risk.
+- **Fallback order for top-ups and gift cards:** Stripe (approved restricted) → specialist high-risk acquirer → crypto (supplementary). Paddle and Lemon Squeezy are effectively unavailable for this line. For the VPN, Paddle remains a fallback MoR that also removes EU VAT and US sales-tax work.
 
 ### Gaps
-- **Param:** no pricing or policy found.
-- **PayPal:** not researched. Background knowledge (unverified here) is that PayPal stopped domestic operations in Turkey in 2016 after BDDK licence refusal, so a Turkish-resident account cannot receive payments. A foreign-entity PayPal account would be the only route. This needs confirmation.
-- Whether Stripe currently supports Turkey-incorporated accounts was not checked; background knowledge says it does not.
-- iyzico's and PayTR's prohibited-sector lists (VPN, gift cards, e-pin, top-ups) were not retrieved.
-- Paddle's VPN approval criteria and Stripe Managed Payments' VPN policy were not found.
-- No specific high-risk acquirer names or fees for gift cards and top-ups were found.
+- The fetched Stripe page did not reveal which tier "money transmitters / remittances / MSBs" falls in. That matters for airtime top-ups and should be verified directly on the page or with Stripe sales.
+- No published Stripe reserve percentages for gift cards or VPNs exist; reserves are set case by case.
+- No named high-risk acquirers with verified pricing for gift cards or top-ups were found. Typical high-risk pricing and reserves (often cited as about 3.5–6% plus a 5–10% rolling reserve) are unverified.
+- Coinbase Commerce and NOWPayments policies on gift-card merchants were not verified.
+- PayPal was not researched for a US LLC with a Turkish-resident owner.
 
 ---
 
-## 4. Company structure and Turkish tax: existing Turkish company vs. US LLC / UK Ltd / Estonia; KDV export exemption; corporate tax; the service-export deduction; e-fatura/e-arşiv
+## 4. Company structure and tax: US-side obligations of the foreign-owned single-member LLC; US sales tax; FinCEN MSB / prepaid access for top-ups and gift cards; Turkish taxation of a Turkish resident owning a US LLC; the Turkish-company service-export alternative
 
 ### Takeaway
-A Turkish company exporting a service to foreign customers can generally apply the **KDV exemption (KDVK 11/1-a, 12/2)** when the customer is abroad and benefits from the service abroad. Since **1 Jan 2026** the **service-export income deduction is 100%** (Presidential Decision 11257, RG 30.04.2026, previously 80% under Law 7524), with **software** among the listed services. It applies only if earnings are **brought to Turkey** by the tax-return deadline. The **10% domestic minimum corporate tax** may still apply to a company. A foreign LLC owned by a Turkish resident does not escape Turkish taxation, and CFC/residence rules apply. Whether a VPN subscription or top-up resale counts as qualifying "software / data processing" export is uncertain. [NEEDS PROFESSIONAL ADVICE — YMM]
+- **US federal tax filing:** a foreign-owned single-member LLC is a disregarded entity. Every year it must file **Form 5472 with a pro forma Form 1120**, even with zero revenue. The penalty is **$25,000 per form**. With no US trade or business (no ECI), there is generally no US federal income tax.
+- **State costs:** Delaware annual tax of $300 (one source says $400 from 2026), plus a registered agent of about $100/yr.
+- **US sales tax:** SaaS and digital subscriptions are taxable in a growing set of states, and economic nexus thresholds count *all* sales. A VPN sold to US consumers via direct Stripe may create state sales-tax obligations. An MoR such as Paddle avoids this.
+- **FinCEN:** sellers of closed-loop gift cards are generally not MSBs and are not required to register. Exceptions apply above $10,000 per person per day, or where products are open-loop or usable without later ID. Airtime top-ups have no clear FinCEN ruling. [NEEDS US COUNSEL]
+- **Turkey:** a Turkish-resident individual is taxed on worldwide income. The LLC's profit is reportedly taxable in Turkey as ticari kazanç or menkul sermaye iradı. Under the Turkey–US treaty, business profits without a US permanent establishment are taxable in Turkey. KVK Art. 7 CFC rules tax only *corporate* shareholders and need ≥25% passive income, so they likely do **not** apply to an individual owning an active VPN or top-up LLC. The bigger risks are Turkish taxation of the LLC's income directly and an "iş merkezi in Turkey" argument. [NEEDS PROFESSIONAL ADVICE — YMM]
 
 ### Cited Findings
-**Service-export income deduction (KVK 10/1-ğ; GVK 89/1-13)**
-- Law 7524 raised the deduction from 50% to 80% — [TÜRMOB e-library](https://turmob.org.tr/ekutuphane/Read/31b9a8e3-c6b1-4f5f-9ff6-1d2149cf7e0f); [PwC – Recep Bıyık column](https://www.pwc.com.tr/tr/medya/kose-yazilari/recep-biyik/hizmet-ihracindan-elde-edilen-kazanclarda-indirim.html)
-- **Presidential Decision No. 11257** (RG 30.04.2026, no. 33239) raised it to **100%** for tax periods starting on or after **1 Jan 2026** — [KPMG Vergi](https://kpmgvergi.com/blog/munhasir-hizmetlere-saglanan-indirim-orani-100-e-cikarildi/1391); [PwC Türkiye bulletin 2026](https://www.pwc.com.tr/tr/Hizmetlerimiz/vergi/vergi-bultenleri/2026/yurt-disi-istirak-kazanci-istisnasi-ve-hizmet-ihracinda-indirim-uygulamasi-hakkinda-cumhurbaskani-karari.pdf)
-- **Qualifying services** include architecture, engineering, design, **software**, medical reporting, bookkeeping, call centres, product testing, certification, **data storage, processing and analysis**, and certain vocational training, education and health services — [KPMG Vergi](https://kpmgvergi.com/blog/munhasir-hizmetlere-saglanan-indirim-orani-100-e-cikarildi/1391)
-- **Conditions** (all from [KPMG Vergi](https://kpmgvergi.com/blog/munhasir-hizmetlere-saglanan-indirim-orani-100-e-cikarildi/1391)):
-  - The service is provided from Turkey to non-residents.
-  - It is used **exclusively abroad** ("münhasıran yurt dışında yararlanılması").
-  - **All** earnings are transferred to Turkey by the CIT return deadline; even a small untransferred portion can block the full deduction.
-  - The deduction must be shown on the return, and unused amounts cannot be carried forward.
-- **Domestic minimum CIT:** the deduction is not deductible from the 10% *yurt içi asgari kurumlar vergisi* base, so a company may still owe **10% minimum CIT**. Individuals (GVK 89) can reach zero — [KPMG Vergi](https://kpmgvergi.com/blog/munhasir-hizmetlere-saglanan-indirim-orani-100-e-cikarildi/1391); [Alomaliye, 17 May 2026 – hizmet ihracatı, asgari KV, KDV istisnası](https://www.alomaliye.com/2026/05/17/hizmet-ihracati-kazanc-ve-kurumlar-vergisi-indirimi-asgari-kurumlar-vergisi-ve-kdv-istisnasi/)
-- Commentary notes interpretive problems, including the "münhasıran" (exclusively-abroad) test and procedural certification risk — [Ekonomi Gazetesi – "%100 indirim sıra münhasıran çıkmazında"](https://www.ekonomigazetesi.com/kose-yazisi/hizmet-ihracatinda-100-indirim-sira-munhasiran-cikmazinda-78578); [Ekonomi Gazetesi – "Hizmet ihracatında şirketleşmemeli mi?"](https://www.ekonomigazetesi.com/kose-yazisi/hizmet-ihracatinda-sirketlesmemeli-mi-82057)
+**US federal obligations (foreign-owned single-member LLC)**
+- Since tax years beginning 1 Jan 2017, a foreign-owned disregarded entity must file **Form 5472 with a pro forma Form 1120** (Treas. Reg. §1.6038A-1). This applies even with no revenue or activity. The 1120 is a cover sheet and creates no corporate tax liability — [SDO CPA – Form 5472 guide](https://www.sdocpa.com/form-5472-foreign-owned-business-guide/); [Zenind – filing guide](https://www.zenind.com/help/post/foreign-owned-single-member-llc-filing-guide-form-5472-pro-forma-1120-deadlines-and-penalties); [VJM Global – pro forma 1120](https://www.vjmglobal.com/feeds/blog/pro-forma-1120-foreign-owned-llc)
+- **Penalty:** $25,000 per form per year (secondary sources; IRS primary not fetched) — [Taxes for Expats – Form 5472 penalty](https://cdn.taxesforexpats.com/articles/foreign-business/form-5472-penalty.html); [Dimov Tax](https://dimovtax.com/irs-form-5472/)
+- **Deadline and filing method:** due 15 April (calendar year), extendable to 15 October. One source says the form must be mailed or faxed rather than e-filed — [Zenind](https://www.zenind.com/help/post/foreign-owned-single-member-llc-filing-guide-form-5472-pro-forma-1120-deadlines-and-penalties)
+- If the LLC's income is effectively connected with a US trade or business, the foreign owner may need to file **Form 1040-NR**, typically with Schedule C — [Vergi Merkezi – 2025 ABD vergi beyanı LLC rehberi](https://vergimerkezi.com.tr/2025-abd-vergi-beyani-llc-rehberi/)
+- **Delaware costs:**
+  - Atlas: $500 one-time; $100/yr registered agent.
+  - Delaware LLC annual tax: $300, or $400 from 1 Jan 2026 per one source (conflicting).
+  - Sources: [Rho](https://www.rho.co/blog/stripe-atlas-review); [Stripe – Delaware LLC costs](https://stripe.com/resources/more/how-much-does-it-cost-to-form-an-llc-in-delaware-fees-and-other-costs); [AgentDeals 2026](https://agentdeals.dev/company-formation-pricing-2026)
 
-**KDV (VAT) on exported services**
-- Legal basis: **KDVK 11/1-a and 12/2**. The service must be performed for a customer abroad **and** benefited from abroad. A foreign customer alone is not enough. If the benefit occurs in Turkey, no exemption applies even if invoiced to a foreign firm and paid in FX — [Alomaliye – hizmet ifasında Türkiye'de faydalanma kriteri](https://www.alomaliye.com/2014/09/22/hizmet-ifasinda-turkiyede-faydalanmafaydalanmama-kriteri/); [Alomaliye – yurt dışında mukim firmaya verilen hizmet](https://alomaliye.com/2017/04/21/yurt-disinda-mukim-firmaya-verilen-hizmetin-kdv-karsisindaki-durumu/)
-- A GİB özelge (private ruling) accepted design, software and consultancy services to a foreign customer used abroad as exempt under 11/1-a. Video streaming to foreign viewers was also treated as potentially exempt — [Alomaliye 2024 – tasarım/yazılım/danışmanlık hizmetinin KDV ve KVK karşısındaki durumu](https://www.alomaliye.com/2024/07/30/yurt-disinda-mukim-firmaya-verilen-tasarim-yazilim-ve-danismanlik-hizmetinin-kdv-ve-kvk-karsisindaki-durumu/); [Alomaliye – YouTube aracılığıyla hizmet ihracatı](https://www.alomaliye.com/2024/10/09/hizmet-ihracatindan-youtube-araciligi-ile-turkiyede-faydalanilma/amp/)
-- Related GİB özelgeler: [Lexpera özelge 790034](https://www.lexpera.com.tr/mevzuat/ozelgeler/39044742-130-ozelge-790034-sayili-ozelge-1); [Lexpera özelge 222571](https://www.lexpera.com.tr/mevzuat/ozelgeler/39044742-130-ozelge-222571-sayili-ozelge-1)
+**US state sales tax on VPN / digital subscriptions**
+- Each state decides whether software, SaaS or digital services are taxable. Recent expansions:
+  - Vermont: remotely accessed software, from 1 Jul 2024
+  - Louisiana: HB 8, from 1 Jan 2025
+  - Utah: SB 162, digital subscriptions, from 1 Jul 2026
+  - Texas: SaaS taxed as data processing, 80% taxable
+  - Sources: [Numeral – SaaS sales tax by state 2026](https://numeral.com/blog/sales-tax-on-saas); [Sales Tax Institute](https://www.salestaxinstitute.com/resources/saas-sales-tax-expansion-by-state); [TaxJar – SaaS sales tax](https://www.taxjar.com/sales-tax/saas-sales-tax-)
+- Economic-nexus thresholds count all sales, not only taxable ones — [sales.tax – digital goods 2026](https://sales.tax/expert-articles/sales-tax-on-digital-goods-whats-taxable-in-2026-and-what-changed/)
+- No source addressed VPN subscriptions specifically.
 
-**Foreign entity (US LLC via Atlas)**
-- Atlas costs $500 one-time plus $100/yr registered agent, with a Delaware annual tax of $300–$400 (sources conflict; see Section 3) — [Rho](https://www.rho.co/blog/stripe-atlas-review); [Stripe](https://stripe.com/resources/more/how-much-does-it-cost-to-form-an-llc-in-delaware-fees-and-other-costs); [AgentDeals](https://agentdeals.dev/company-formation-pricing-2026)
+**FinCEN: MSB / prepaid access (gift cards, top-ups)**
+- The 2011 FinCEN Prepaid Access Final Rule includes these points:
+  - **Closed-loop prepaid access** below **$2,000** maximum value per device per day is outside "prepaid program."
+  - Limited **open-loop** access up to **$1,000/day** is also outside, subject to conditions: no international use, no person-to-person transfers, no non-bank reloads.
+  - **Providers** of prepaid access must register as MSBs.
+  - **Sellers** are not required to register, but must keep an AML program if they sell products usable without later customer ID, or sell more than $10,000 to one person in a day without preventive policies.
+  - Sources: [FinCEN – Prepaid Access Final Rule press release](https://www.fincen.gov/news/news-releases/fincen-issues-prepaid-access-final-rule); [Federal Register 76 FR 45403 (29 Jul 2011)](https://www.federalregister.gov/documents/2011/07/29/2011-19116/bank-secrecy-act-regulations-definitions-and-other-regulations-relating-to-prepaid-access); [Safeheld summary](https://safeheld.com/resources/provider-of-prepaid-access); [Lexology – FinCEN prepaid FAQs](https://www.lexology.com/library/detail.aspx?g=e550ea9a-4727-4104-963d-d80fefabd4ef)
+- FinCEN administrative rulings on prepaid and stored value are fact-specific. FIN-2014-R006 concerns open-loop; FIN-2009-R001 found a stored-value reload processor was *not* a money transmitter in that arrangement. No airtime-specific ruling was found — [FIN-2014-R006](https://www.fincen.gov/system/files/administrative_ruling/FIN-2014-R006.pdf); [FIN-2009-R001](https://www.fincen.gov/system/files/shared/fin-2009-r001.pdf)
+- Gaming and digital-goods companies can become "inadvertent MSBs" through stored value or transfer features — [Wilson Sonsini](https://www.wsgr.com/en/insights/how-gaming-companies-can-become-inadvertent-money-services-businesses.html)
+
+**Turkish taxation of a Turkish resident owning a US LLC**
+- A single-member LLC is a US "disregarded entity." Commentators say a Turkish full taxpayer must include the LLC income in Turkey as **ticari kazanç or menkul sermaye iradı** — [Manay CPA – ABD şirketinden kâr payı](https://www.manaycpa.com/tr/abddeki-sirketinizden-turkiyeye-kar-payi-cekimi-nasil-vergilendirilir/); [Lemon Academy – LLC ve çifte vergi](https://lemonacademy.co.uk/?p=40737)
+- Under the **Turkey–US DTA (1996)**, absent a US permanent establishment, business profits are taxable in Turkey, the residence state. US tax paid may be credited subject to the treaty — [Lemon Academy](https://lemonacademy.co.uk/?p=40737)
+- **KVK Art. 7 (kontrol edilen yabancı kurum / CFC)** has four cumulative conditions:
+  - ≥50% control by Turkish full taxpayers, individuals included in the count
+  - ≥**25% passive income** (interest, dividends, rent, royalties, securities gains)
+  - Foreign tax burden **<10%**
+  - Gross revenue >TRY 100,000
+  - Source: [Hukukçular Evi – KVK 7 (2026)](https://hukukcularevi.com/kontrol-edilen-yabanci-kurum-kazanci-kvk-7-yuzde-50-kontrol-yuzde-25-pasif-gelir-yuzde-10-vergi-yuku-dagitilmayan-kar-kvk-33-2-mahsup-sonraki-kar-payi-gercek-kisi-cvoa-2026/); [Alomaliye – KEYK kazancının vergilendirilmesi (Apr 2025)](https://www.alomaliye.com/2025/04/14/kontrol-edilen-yabanci-kurum-kazancinin-vergilendirilmesi/)
+- **Only corporate shareholders are taxed** under Art. 7, pro rata, whether or not profits are distributed. Individuals count toward control but are not taxed under the article; their dividends follow general rules. Treaties do not prevent Art. 7 application to residents, per the administration's view, which is disputed — [Hukukçular Evi](https://hukukcularevi.com/kontrol-edilen-yabanci-kurum-kazanci-kvk-7-yuzde-50-kontrol-yuzde-25-pasif-gelir-yuzde-10-vergi-yuku-dagitilmayan-kar-kvk-33-2-mahsup-sonraki-kar-payi-gercek-kisi-cvoa-2026/)
+- Sources differ on the passive-income threshold quoted in older literature (25% vs. other figures). The 2026 summary and the statute as commonly cited use 25% — [Alomaliye 2023](https://www.alomaliye.com/2023/09/25/yurtdisi-istirak-kazanclari-istisnasi-ve-kontrol-edilen-yabanci-kurum-kazanci/); [Vergi Raporu 2012](https://vergiraporu.com.tr/upImage/org/2012-151-Kontrol_Edilen_Yabanci_Kurum_Kazanclarinin_Vergilendirilmesi-Nur_Pehlivan_Karakoc%20.pdf)
+
+**Alternative or complement: Turkish company exporting services** (kept from the earlier research)
+- **KDV exemption** (KDVK 11/1-a, 12/2) applies when the customer is abroad **and** benefits abroad. GİB özelgeler accepted software, design and video streaming to foreign users — [Alomaliye 2024](https://www.alomaliye.com/2024/07/30/yurt-disinda-mukim-firmaya-verilen-tasarim-yazilim-ve-danismanlik-hizmetinin-kdv-ve-kvk-karsisindaki-durumu/); [Alomaliye – faydalanma kriteri](https://www.alomaliye.com/2014/09/22/hizmet-ifasinda-turkiyede-faydalanmafaydalanmama-kriteri/)
+- **Service-export income deduction** (KVK 10/1-ğ, GVK 89/1-13):
+  - Raised to **100%** by Presidential Decision 11257 (RG 30.04.2026), from 80% under Law 7524, for periods from **1 Jan 2026**.
+  - Software and data processing/storage are listed.
+  - Conditions: used **exclusively abroad**, and **all** earnings brought to Turkey by the return deadline.
+  - Companies still face the **10% domestic minimum CIT**; individuals (GVK 89) can reach zero.
+  - Sources: [KPMG Vergi](https://kpmgvergi.com/blog/munhasir-hizmetlere-saglanan-indirim-orani-100-e-cikarildi/1391); [PwC TR bulletin 2026](https://www.pwc.com.tr/tr/Hizmetlerimiz/vergi/vergi-bultenleri/2026/yurt-disi-istirak-kazanci-istisnasi-ve-hizmet-ihracinda-indirim-uygulamasi-hakkinda-cumhurbaskani-karari.pdf); [Alomaliye May 2026](https://www.alomaliye.com/2026/05/17/hizmet-ihracati-kazanc-ve-kurumlar-vergisi-indirimi-asgari-kurumlar-vergisi-ve-kdv-istisnasi/); [Ekonomi Gazetesi – münhasıran çıkmazı](https://www.ekonomigazetesi.com/kose-yazisi/hizmet-ihracatinda-100-indirim-sira-munhasiran-cikmazinda-78578)
 
 ### Inferences
-- **VPN subscription to foreign consumers:** a strong argument exists for the KDV 11/1-a exemption, since the customer is abroad and the benefit is abroad. Whether a VPN counts as qualifying "software / data processing" for the 100% income deduction is untested in the sources found. The B2C, consumer-facing nature and the "münhasıran" test are risk points. [YMM opinion / özelge application recommended]
-- **Top-up and gift-card resale:** this is trading in third-party digital goods or services, not a listed service type, so the 100% service-export deduction **likely does not apply**. Ordinary 25% CIT on margin would apply. The KDV treatment of airtime and vouchers sold to foreigners is complex (voucher vs. service, place of supply) and unresearched.
-- **Foreign LLC route:** it simplifies Stripe, PayPal and MoR onboarding. But a Turkey-resident owner likely triggers Turkish tax on the LLC's income under KVK Art. 7 CFC rules, or the place-of-effective-management test (kanuni veya iş merkezi). The 100% deduction requires earnings to land *in Turkey* through a Turkish taxpayer anyway. A common hybrid is a foreign entity for payment collection plus the Turkish company invoicing the foreign entity for software or development services. That structure needs transfer-pricing review. [NEEDS PROFESSIONAL ADVICE]
-- **Foreign consumer VAT** (EU OSS, UK VAT and others) applies if selling B2C directly rather than through an MoR. This is a key reason to prefer Paddle or Lemon Squeezy for the VPN.
+- **US cost floor for the existing LLC:**
+  - Delaware tax $300–400/yr
+  - Registered agent about $100/yr
+  - Form 5472 + pro forma 1120 preparation, typically a few hundred USD at specialist firms (not sourced)
+  - Total roughly **USD 500–1,000/yr** before sales-tax compliance, about TRY 21,000–42,000 at an assumed ~42 TRY/USD (rate not sourced; check current).
+- **ECI:** a Turkey-resident founder operating remotely, with no US office, employees or dependent agent, is the classic "no ECI" fact pattern. US-located VPN servers or US staff could change that analysis. [US tax advice]
+- **US sales tax:** selling the VPN directly via Stripe to US consumers means monitoring state nexus (Stripe Tax can calculate). Using Paddle as MoR transfers this, at a 5% + $0.50 cost.
+- **FinCEN:**
+  - *Lowest-risk:* reselling closed-loop third-party gift cards (e.g., a retailer's own card) in small denominations, with per-customer daily caps well below $10,000 and identity captured. This fits the "seller of prepaid access, no registration" pattern.
+  - *Higher-risk:* open-loop prepaid cards (Visa/Mastercard gift cards) and any customer wallet or balance.
+  - *Unclear:* international airtime top-ups. Whether an airtime reseller is a "money transmitter" turns on whether it is seen as transmitting value to a third party abroad. Many US airtime sellers rely on the telecom-product characterization, but no FinCEN source was found.
+  - State money-transmitter laws may also apply independently.
+  - [NEEDS US FINTECH COUNSEL]
+- **Turkish CFC:** with an individual owner and active income (VPN subscriptions, top-up margins), KVK Art. 7 likely does not bite, since the owner is not a corporation and the income is not passive. The more relevant Turkish points are:
+  1. The founder's worldwide-income declaration of LLC profits, as ticari kazanç at progressive rates up to 40% (rates not sourced here), or as dividend/menkul sermaye iradı depending on characterization.
+  2. The risk that a US LLC managed entirely from Turkey is treated as having its **iş merkezi (place of effective management) in Turkey**, making it a Turkish full taxpayer under KVK Art. 3. This is unverified, and the search found no source.
+  3. If the founder's *Turkish company* owns the LLC rather than the founder personally, Art. 7 analysis becomes relevant, and the 10% tax-burden test is easily failed because a disregarded LLC pays no US entity-level tax.
+- **Possible hybrid:** the US LLC collects through Stripe, and the founder's Turkish company invoices the LLC for software development and operations. That invoice could qualify for the KDV export exemption plus the 100% service-export deduction, subject to the 10% minimum CIT. It needs transfer-pricing support and a YMM opinion.
 
 ### Gaps
-- No primary text of Presidential Decision 11257 or of the Kurumlar Vergisi Genel Tebliği draft amendment (Alomaliye June 2026 draft) was read. The "bring earnings to Turkey" rule is from KPMG's summary.
-- **e-fatura / e-arşiv:** no source was retrieved on 2026 thresholds or on the e-arşiv rules for B2C sales to foreign individuals; generally an e-arşiv fatura is issued with "yurt dışı" customer details. GİB guidance needs checking.
-- **Kurumlar vergisi:** 25% general rate (background, not sourced in this research).
-- **Turkish digital service tax (DST)** and "foreign digital service providers" (KDVK 9/2 reverse-charge, and foreign providers registering for KDV) were not researched.
-- **UK Ltd and Estonia e-Residency costs:** not researched. Background, unverified: UK Companies House incorporation is about £50 (raised in 2024); Estonia e-Residency is about €100–150 plus a €265 state fee. Both are also subject to Turkish CFC and management concerns.
-- **Turkish company running costs** (mali müşavir monthly fees, e-fatura integrator costs, Ltd/AŞ capital minimums after 2024) were not sourced.
+- IRS primary text (Form 5472 instructions; the IRC §6038A penalty) was not fetched.
+- The official Delaware 2026 LLC tax amount was not confirmed ($300 vs. $400).
+- No state-by-state taxability of VPN services specifically was found.
+- The eCFR text of 31 CFR 1010.100(ff) and (ww) could not be fetched (redirect); thresholds come from the Federal Register, the FinCEN press release and secondary summaries.
+- No FinCEN ruling on international airtime top-up resellers was found. State money-transmitter law and the CSBS model act were not researched.
+- No official GİB özelge was found on how a Turkish resident individual should declare income from a single-member US LLC (pass-through vs. corporate characterization). The Turkish place-of-effective-management risk is not sourced.
+- Turkish individual income tax brackets (2026) and the dividend withholding treatment of US LLC distributions were not sourced.
+- The UK Ltd and Estonia options were dropped from scope per the user update.
 
 ---
 
